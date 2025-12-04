@@ -181,3 +181,91 @@ $isAuth = $app->isAuthenticated();
     </div>
 </body>
 </html>
+
+    private $dataFile = 'dados.json';
+    private $users = [];
+    private $tasks = [];
+
+    public function __construct() {
+        $this->loadData();
+    }
+
+    private function loadData() {
+        if (file_exists($this->dataFile)) {
+            $data = json_decode(file_get_contents($this->dataFile), true);
+            $this->users = $data['users'] ?? [];
+            $this->tasks = $data['tasks'] ?? [];
+        }
+    }
+
+    private function saveData() {
+        file_put_contents($this->dataFile, json_encode([
+            'users' => $this->users,
+            'tasks' => $this->tasks
+        ], JSON_PRETTY_PRINT));
+    }
+
+    public function login($email, $password) {
+        foreach ($this->users as $user) {
+            if ($user['email'] === $email && password_verify($password, $user['password'])) {
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['email'] = $user['email'];
+                return ['success' => true, 'redirect' => '/'];
+            }
+        }
+        return ['success' => false, 'message' => 'Email ou senha inválidos'];
+    }
+
+    public function logout() {
+        session_destroy();
+    }
+
+    public function createTask($name, $description) {
+        if (empty($name) || empty($description)) {
+            return ['success' => false, 'message' => 'Nome e descrição são obrigatórios'];
+        }
+        $task = [
+            'id' => uniqid(),
+            'user_id' => $_SESSION['user_id'],
+            'name' => $name,
+            'description' => $description,
+            'status' => 'Pendente',
+            'created_at' => date('d/m/Y H:i')
+        ];
+        $this->tasks[] = $task;
+        $this->saveData();
+        return ['success' => true];
+    }
+
+    public function completeTask($taskId) {
+        foreach ($this->tasks as &$task) {
+            if ($task['id'] === $taskId && $task['user_id'] === $_SESSION['user_id']) {
+                $task['status'] = 'Concluída';
+                $this->saveData();
+                return ['success' => true];
+            }
+        }
+        return ['success' => false, 'message' => 'Tarefa não encontrada'];
+    }
+
+    public function deleteTask($taskId) {
+        $this->tasks = array_filter($this->tasks, function($task) use ($taskId) {
+            return !($task['id'] === $taskId && $task['user_id'] === $_SESSION['user_id']);
+        });
+        $this->saveData();
+        return ['success' => true];
+    }
+
+    public function getTasks() {
+        return array_filter($this->tasks, function($task) {
+            return $task['user_id'] === ($_SESSION['user_id'] ?? null);
+        });
+    }
+
+    public function isAuthenticated() {
+        return isset($_SESSION['user_id']);
+    }
+
+}
+
+$app = new AppTask();
