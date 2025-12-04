@@ -1,132 +1,34 @@
-/**
- * AppTask
- * 
- * Classe responsável pelo gerenciamento de tarefas e autenticação de usuários.
- * Implementa funcionalidades de login, logout, criação, conclusão, exclusão e listagem de tarefas.
- * 
- * @package ExtremeDigital
- * @version 1.0.0
- */
-
-// Inicia a sessão PHP
 session_start();
 
-/**
- * Construtor da classe AppTask
- * 
- * Inicializa a sessão PHP necessária para manter o estado de autenticação do usuário.
- * 
- * @return void
- */
-public function __construct() {
-    // Inicializa a sessão
+class AppTask {
+    public function __construct() {
+    }
+
+    public function login($email, $password) {
+    }
+
+    public function logout() {
+    }
+
+    public function createTask($name, $description) {
+    }
+
+    public function completeTask($taskId) {
+    }
+
+    public function deleteTask($taskId) {
+    }
+
+    public function getTasks() {
+    }
+
+    public function isAuthenticated() {
+    }
 }
 
-/**
- * Autentica um usuário através de email e senha
- * 
- * Valida as credenciais do usuário contra a lista de usuários registrados.
- * Se as credenciais forem válidas, cria uma sessão e retorna redirecionamento para dashboard.
- * 
- * @param string $email Email do usuário
- * @param string $password Senha do usuário
- * 
- * @return array Array associativo contendo:
- *               - 'success' (bool): Indica se a autenticação foi bem-sucedida
- *               - 'redirect' (string): URL para redirecionamento em caso de sucesso
- *               - 'message' (string): Mensagem de erro em caso de falha
- */
-public function login($email, $password) {
-    // Lógica de autenticação
-}
-
-/**
- * Encerra a sessão do usuário autenticado
- * 
- * Destrói a sessão PHP e limpa o usuário atual do contexto da aplicação.
- * 
- * @return void
- */
-public function logout() {
-    // Lógica para encerrar a sessão
-}
-
-/**
- * Cria uma nova tarefa para o usuário autenticado
- * 
- * Valida se o usuário está autenticado antes de criar a tarefa.
- * Atribui um ID único, timestamp de criação e status inicial "Pendente".
- * 
- * @param string $name Nome da tarefa
- * @param string $description Descrição detalhada da tarefa
- * 
- * @return array Array associativo contendo:
- *               - 'success' (bool): Indica se a tarefa foi criada com sucesso
- *               - 'task' (array): Dados da tarefa criada em caso de sucesso
- *               - 'message' (string): Mensagem de erro em caso de falha
- */
-public function createTask($name, $description) {
-    // Lógica para criar uma nova tarefa
-}
-
-/**
- * Marca uma tarefa como concluída
- * 
- * Localiza a tarefa pelo ID e altera seu status para "Concluída".
- * 
- * @param string $taskId ID único da tarefa a ser concluída
- * 
- * @return array Array associativo contendo:
- *               - 'success' (bool): Indica se a tarefa foi concluída com sucesso
- *               - 'message' (string): Mensagem de erro em caso de falha
- */
-public function completeTask($taskId) {
-    // Lógica para marcar a tarefa como concluída
-}
-
-/**
- * Deleta uma tarefa existente
- * 
- * Remove permanentemente a tarefa do array de tarefas baseado em seu ID.
- * 
- * @param string $taskId ID único da tarefa a ser deletada
- * 
- * @return array Array associativo contendo:
- *               - 'success' (bool): Indica se a tarefa foi deletada com sucesso
- *               - 'message' (string): Mensagem de erro em caso de falha
- */
-public function deleteTask($taskId) {
-    // Lógica para deletar a tarefa
-}
-
-/**
- * Retorna todas as tarefas registradas
- * 
- * Lista completa de tarefas armazenadas na memória da aplicação.
- * 
- * @return array Array de tarefas contendo todos os dados de cada uma
- */
-public function getTasks() {
-    // Lógica para obter todas as tarefas
-}
-
-/**
- * Verifica se o usuário está autenticado
- * 
- * Valida se existe uma sessão de usuário ativa.
- * 
- * @return bool True se o usuário está autenticado, false caso contrário
- */
-public function isAuthenticated() {
-    // Lógica para verificar autenticação
-}
-
-// Código para processar ações do formulário
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Captura a ação do formulário
     $action = $_POST['action'] ?? '';
 
-    // Processa o login
     if ($action === 'login') {
         $result = $app->login($_POST['email'] ?? '', $_POST['password'] ?? '');
         if ($result['success']) {
@@ -136,33 +38,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $message = $result['message'];
     }
 
-    // Processa o logout
     if ($action === 'logout') {
         $app->logout();
         header('Location: /');
         exit;
     }
 
-    // Cria uma nova tarefa
     if ($action === 'create_task' && $app->isAuthenticated()) {
         $result = $app->createTask($_POST['name'] ?? '', $_POST['description'] ?? '');
         $message = $result['success'] ? 'Tarefa criada!' : $result['message'];
     }
 
-    // Marca uma tarefa como concluída
     if ($action === 'complete_task' && $app->isAuthenticated()) {
         $result = $app->completeTask($_POST['task_id'] ?? '');
         $message = $result['success'] ? 'Tarefa concluída!' : $result['message'];
     }
 
-    // Deleta uma tarefa
     if ($action === 'delete_task' && $app->isAuthenticated()) {
         $result = $app->deleteTask($_POST['task_id'] ?? '');
         $message = $result['success'] ? 'Tarefa deletada!' : $result['message'];
     }
 }
 
-// Obtém todas as tarefas e verifica autenticação
 $tasks = $app->getTasks();
 $isAuth = $app->isAuthenticated();
 ?>
@@ -173,7 +70,6 @@ $isAuth = $app->isAuthenticated();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AppTask - Gerenciador de Tarefas</title>
     <style>
-        /* Estilos para a página */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: Arial, sans-serif; background: #f5f5f5; }
         .container { max-width: 800px; margin: 20px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
@@ -206,8 +102,7 @@ $isAuth = $app->isAuthenticated();
 <body>
     <div class="container">
         <?php if (!$isAuth): ?>
-            <h1>📋 AppTask - Login</h1>
-            <?php if ($message): ?>
+            <?php if (!empty($message)): ?>
                 <div class="message error"><?php echo htmlspecialchars($message); ?></div>
             <?php endif; ?>
             <form method="POST" class="login-form">

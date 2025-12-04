@@ -63,8 +63,8 @@
 <!-- Body renderiza a página com a mensagem e saudação personalizadas -->
 <body>
     <div class="container">
-        <h1><?php echo $message; ?></h1>
-        <p><?php echo "Olá, " . $name . "!"; ?></p>
+        <h1><?php echo isset($message) ? $message : "Bem-vindo"; ?></h1>
+        <p><?php echo isset($name) ? "Olá, " . $name . "!" : "Olá, visitante!"; ?></p>
         <button class="btn-follow" onclick="window.location.href='AppTask.php'">Seguir</button>
     </div>
 </body>
